@@ -1,0 +1,70 @@
+---
+title: "Homework 6"
+output: html_notebook
+---
+
+__Question 1:__ Choose a country (not the US). 
+
+Use the package maps to show a map of the country:
+
+```{r}
+library(maps)
+library(mapdata)
+map("worldHires","South Korea",col="gray90",fill=TRUE)
+```
+
+The dataset `world.cities` included in the map package contain information about the location and population of several cities in the world. Create a new data frame containing only the cities in the country you chose:
+
+```{r}
+cities2=world.cities
+cities3=subset(cities2, country.etc == "Korea South")
+```
+
+Now take a look the cities, choose a population threshold that will lead to only about 20 cities in your dataset and plot the location of these cities in the country map using the `map.cities` function :
+
+```{r}
+cities4=subset(cities3,pop>380000)
+map("world","Korea South")
+map.cities(x=world.cities,country="Korea South",  minpop=380000, label=TRUE)
+
+```
+
+Now instead of using `map.cities`, create a new dataframe `myCities` with only the latitude and longitude of the cities you chose above. You are going to need to get this information directly from the `world.cities` dataset.
+
+```{r}
+myCities=cities4[,c("long","lat")]
+
+```
+
+Use the geosphere package to calculate the distances between each pair of cities (use the `distm` function). You will need to add row and column names to the result of `distm`.
+
+```{r}
+library(geosphere)
+dre=distm(myCities)
+rownames(dre)=cities4[,"name"]
+mdis = as.dist(dre)/10000
+
+```
+
+Use this data frame to perform a PCoA, plot the results and compare to your original graph of the cities.
+
+```{r}
+library(plotly)
+library(ape)
+pcoaRes3 <- pcoa(mdis,correction="lingoes")
+pcoaResDf3 <- data.frame(pcoaRes3$vectors)
+p = plot_ly(pcoaResDf3, x = ~Axis.1 , y = ~Axis.2, text = rownames(dre), type = 'scatter',
+             mode = "markers", marker = list(size = 11)) 
+ 
+p <- layout(p, title = "PCoA from South Korean City Distances", 
+       xaxis = list(title = "PC 1"),
+       yaxis = list(title = "PC 2"))
+p
+```
+
+
+
+
+
+
+```
