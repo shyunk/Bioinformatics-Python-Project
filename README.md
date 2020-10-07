@@ -1,2 +1,2 @@
-# Pomona_Bioinfo_Project
+# Bionformatics Python Project
 Bioinformatics 2018
